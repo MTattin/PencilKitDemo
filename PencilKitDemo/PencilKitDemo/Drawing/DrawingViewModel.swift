@@ -122,6 +122,7 @@ final class DrawingViewModel: NSObject, ObservableObject {
             do {
                 try await saveData(canvasView.drawing)
                 canvasView.drawing = PKDrawing()
+                hasModifiedDrawing = false
             } catch {
                 errorMessage = error.localizedDescription
             }
