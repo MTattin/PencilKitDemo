@@ -13,6 +13,7 @@ final class DrawingViewModel: NSObject, ObservableObject {
 
     // MARK: - Properties
 
+    @Published var showProgress: Bool = false
     @Published var showError: Bool = false {
         didSet {
             if !showError {
@@ -27,6 +28,8 @@ final class DrawingViewModel: NSObject, ObservableObject {
             }
         }
     }
+
+    let canvasView = PKCanvasView()
 
     private(set) var errorMessage: String = "" {
         didSet {
@@ -47,6 +50,7 @@ final class DrawingViewModel: NSObject, ObservableObject {
         }
     }
 
+    private let toolPicker = PKToolPicker()
     private let serializationQueue = DispatchQueue(label: "SerializationQueue", qos: .userInitiated)
     private let saveURL: URL = {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -54,37 +58,83 @@ final class DrawingViewModel: NSObject, ObservableObject {
         return documentsDirectory.appendingPathComponent("PencilKitDemo.data")
     }()
 
-    private(set) var hasModifiedDrawing = false
+    private var hasModifiedDrawing = false
 
     // MARK: - Conveniences
 
-    func loadDrawing() async -> PKDrawing {
-        do {
-            return try await loadDataModel()
-        } catch {
-            errorMessage = """
-                Load error(\(error.localizedDescription)).
+    func onAppear() {
+        canvasView.backgroundColor = .clear
+        canvasView.drawingPolicy = .anyInput
+        canvasView.delegate = self
+    }
 
-                Please try again.
-                """
-            return PKDrawing()
+    func dismiss(_ dismiss: DismissAction) {
+        guard hasModifiedDrawing else {
+            dismiss()
+            return
+        }
+        confirmMessage = """
+            When you return to the top screen, the history of undo and redo will be deleted.
+            """
+    }
+
+    func toggleTool() {
+        if toolPicker.isVisible {
+            toolPicker.setVisible(false, forFirstResponder: canvasView)
+        } else {
+            toolPicker.setVisible(true, forFirstResponder: canvasView)
+            toolPicker.addObserver(canvasView)
+            canvasView.becomeFirstResponder()
         }
     }
 
-    func saveDrawing(_ drawing: PKDrawing) async {
-        do {
-            try await saveData(drawing)
-        } catch {
-            errorMessage = error.localizedDescription
+    func saveToAlbum() {
+        errorMessage = """
+            Sorry!!
+            Not implement yet...
+            """
+    }
+
+    func restart() {
+        showProgress = true
+        Task { @MainActor in
+            do {
+                try await Task.sleep(for: .seconds(0.5))
+                canvasView.drawing = try await loadDataModel()
+            } catch {
+                errorMessage = """
+                    Load error(\(error.localizedDescription)).
+
+                    Please try again.
+                    """
+            }
+            hasModifiedDrawing = false
+            showProgress = false
         }
     }
 
-    func setErrorMessage(_ message: String) {
-        errorMessage = message
+    func pause() {
+        guard hasModifiedDrawing, !canvasView.drawing.strokes.isEmpty else {
+            return
+        }
+        showProgress = true
+        Task { @MainActor in
+            do {
+                try await saveData(canvasView.drawing)
+                canvasView.drawing = PKDrawing()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            try await Task.sleep(for: .seconds(0.5))
+            showProgress = false
+        }
     }
 
-    func setConfirmMessage(_ message: String) {
-        confirmMessage = message
+    func help() {
+        errorMessage = """
+            Sorry!!
+            Not implement yet...
+            """
     }
 }
 
