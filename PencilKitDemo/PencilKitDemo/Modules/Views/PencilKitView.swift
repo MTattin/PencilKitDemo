@@ -12,14 +12,9 @@ struct PencilKitView: UIViewRepresentable {
 
     typealias UIViewType = PKCanvasView
 
-    let drawingPolicy: PKCanvasViewDrawingPolicy
-
-    @Binding var toolPicker: PKToolPicker
-    @Binding var canvasView: PKCanvasView
+    let canvasView: PKCanvasView
 
     func makeUIView(context: Context) -> UIViewType {
-        canvasView.backgroundColor = .clear
-        canvasView.drawingPolicy = drawingPolicy
         return canvasView
     }
 
