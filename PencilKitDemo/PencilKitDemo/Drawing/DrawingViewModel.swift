@@ -81,6 +81,7 @@ final class DrawingViewModel: NSObject, ObservableObject {
     func toggleTool() {
         if toolPicker.isVisible {
             toolPicker.setVisible(false, forFirstResponder: canvasView)
+            toolPicker.removeObserver(canvasView)
         } else {
             toolPicker.setVisible(true, forFirstResponder: canvasView)
             toolPicker.addObserver(canvasView)
