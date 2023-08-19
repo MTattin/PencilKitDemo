@@ -101,7 +101,7 @@ final class DrawingViewModel: NSObject, ObservableObject {
         Task { @MainActor in
             do {
                 try await Task.sleep(for: .seconds(0.5))
-                canvasView.drawing = try await loadDataModel()
+                canvasView.drawing = PKDrawing(strokes: try await loadDataModel().strokes)
             } catch {
                 errorMessage = """
                     Load error(\(error.localizedDescription)).
