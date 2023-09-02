@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C0F1DB72AA2E46F002D1AE5 /* ImageSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F1DB62AA2E46F002D1AE5 /* ImageSaver.swift */; };
+		4C0F1DB92AA2EA8E002D1AE5 /* ToastModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F1DB82AA2EA8E002D1AE5 /* ToastModifier.swift */; };
 		4C0F1DBC2AA30460002D1AE5 /* ErrorMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F1DBB2AA30460002D1AE5 /* ErrorMessageModel.swift */; };
 		4C0F1DBE2AA30481002D1AE5 /* ConfirmMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F1DBD2AA30481002D1AE5 /* ConfirmMessageModel.swift */; };
+		4C0F1DC02AA30CB6002D1AE5 /* SaveConfirmMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F1DBF2AA30CB6002D1AE5 /* SaveConfirmMessageModel.swift */; };
+		4C0F1DC42AA319C8002D1AE5 /* ToastMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0F1DC32AA319C8002D1AE5 /* ToastMessageModel.swift */; };
 		4C1482282A8E076700947877 /* PencilKitDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1482272A8E076700947877 /* PencilKitDemoApp.swift */; };
 		4C14822A2A8E076700947877 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1482292A8E076700947877 /* DrawingView.swift */; };
 		4C14822C2A8E076A00947877 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C14822B2A8E076A00947877 /* Assets.xcassets */; };
@@ -18,11 +22,16 @@
 		4C1482492A8F0E9E00947877 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1482482A8F0E9E00947877 /* ContentView.swift */; };
 		4C14824B2A8F1C1800947877 /* ProgressModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C14824A2A8F1C1800947877 /* ProgressModifier.swift */; };
 		4C3B2EB62A918A5700F733C0 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3B2EB52A918A5700F733C0 /* ViewExtension.swift */; };
+		4C3B2EB82A91979600F733C0 /* SaveConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3B2EB72A91979600F733C0 /* SaveConfirmationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C0F1DB62AA2E46F002D1AE5 /* ImageSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSaver.swift; sourceTree = "<group>"; };
+		4C0F1DB82AA2EA8E002D1AE5 /* ToastModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToastModifier.swift; sourceTree = "<group>"; };
 		4C0F1DBB2AA30460002D1AE5 /* ErrorMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageModel.swift; sourceTree = "<group>"; };
 		4C0F1DBD2AA30481002D1AE5 /* ConfirmMessageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmMessageModel.swift; sourceTree = "<group>"; };
+		4C0F1DBF2AA30CB6002D1AE5 /* SaveConfirmMessageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveConfirmMessageModel.swift; sourceTree = "<group>"; };
+		4C0F1DC32AA319C8002D1AE5 /* ToastMessageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToastMessageModel.swift; sourceTree = "<group>"; };
 		4C1482242A8E076700947877 /* PencilKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PencilKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C1482272A8E076700947877 /* PencilKitDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDemoApp.swift; sourceTree = "<group>"; };
 		4C1482292A8E076700947877 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
@@ -33,6 +42,7 @@
 		4C1482482A8F0E9E00947877 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4C14824A2A8F1C1800947877 /* ProgressModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressModifier.swift; sourceTree = "<group>"; };
 		4C3B2EB52A918A5700F733C0 /* ViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
+		4C3B2EB72A91979600F733C0 /* SaveConfirmationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveConfirmationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +61,8 @@
 			children = (
 				4C0F1DBD2AA30481002D1AE5 /* ConfirmMessageModel.swift */,
 				4C0F1DBB2AA30460002D1AE5 /* ErrorMessageModel.swift */,
+				4C0F1DBF2AA30CB6002D1AE5 /* SaveConfirmMessageModel.swift */,
+				4C0F1DC32AA319C8002D1AE5 /* ToastMessageModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -108,6 +120,7 @@
 				4C3B2EB42A918A4000F733C0 /* Extensions */,
 				4C1482522A8F53FC00947877 /* Modifiers */,
 				4C1482512A8F53E800947877 /* Views */,
+				4C0F1DB62AA2E46F002D1AE5 /* ImageSaver.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -116,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				4C1482352A8E317200947877 /* PencilKitView.swift */,
+				4C3B2EB72A91979600F733C0 /* SaveConfirmationView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -124,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				4C14824A2A8F1C1800947877 /* ProgressModifier.swift */,
+				4C0F1DB82AA2EA8E002D1AE5 /* ToastModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -206,15 +221,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C3B2EB82A91979600F733C0 /* SaveConfirmationView.swift in Sources */,
 				4C14822A2A8E076700947877 /* DrawingView.swift in Sources */,
 				4C1482362A8E317200947877 /* PencilKitView.swift in Sources */,
 				4C0F1DBC2AA30460002D1AE5 /* ErrorMessageModel.swift in Sources */,
 				4C0F1DBE2AA30481002D1AE5 /* ConfirmMessageModel.swift in Sources */,
 				4C1482402A8EF65B00947877 /* DrawingViewModel.swift in Sources */,
+				4C0F1DB72AA2E46F002D1AE5 /* ImageSaver.swift in Sources */,
+				4C0F1DC02AA30CB6002D1AE5 /* SaveConfirmMessageModel.swift in Sources */,
 				4C3B2EB62A918A5700F733C0 /* ViewExtension.swift in Sources */,
 				4C14824B2A8F1C1800947877 /* ProgressModifier.swift in Sources */,
 				4C1482492A8F0E9E00947877 /* ContentView.swift in Sources */,
+				4C0F1DB92AA2EA8E002D1AE5 /* ToastModifier.swift in Sources */,
 				4C1482282A8E076700947877 /* PencilKitDemoApp.swift in Sources */,
+				4C0F1DC42AA319C8002D1AE5 /* ToastMessageModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,6 +366,7 @@
 				DEVELOPMENT_TEAM = D8895LUF5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "描画した内容を写真にアクセスして保存します。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -375,6 +396,7 @@
 				DEVELOPMENT_TEAM = D8895LUF5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "描画した内容を写真にアクセスして保存します。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

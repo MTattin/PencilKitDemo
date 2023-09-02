@@ -16,6 +16,8 @@ final class DrawingViewModel: NSObject, ObservableObject {
     @Published var showProgress: Bool = false
     @Published var errorMessageModel = ErrorMessageModel()
     @Published var confirmMessageModel = ConfirmMessageModel()
+    @Published var saveConfirmMessageModel = SaveConfirmMessageModel()
+    @Published var toastMessageModel = ToastMessageModel()
 
     let canvasView = PKCanvasView()
 
@@ -35,6 +37,19 @@ final class DrawingViewModel: NSObject, ObservableObject {
         canvasView.backgroundColor = .clear
         canvasView.drawingPolicy = .anyInput
         canvasView.delegate = self
+        Task {
+            let drawing = try? await loadDataModel()
+            if drawing?.strokes.count ?? 0 > 0 {
+                Task { @MainActor in
+                    confirmMessageModel.title = ""
+                    confirmMessageModel.message = "Do you want to restore the previously drawn image?"
+                    confirmMessageModel.rightButtonRole = nil
+                    confirmMessageModel.rightButtonTitle = "Restore"
+                    confirmMessageModel.action = { self.restore() }
+                    confirmMessageModel.show = true
+                }
+            }
+        }
     }
 
     func dismiss(_ dismiss: DismissAction) {
@@ -63,14 +78,18 @@ final class DrawingViewModel: NSObject, ObservableObject {
         }
     }
 
-    func saveToAlbum() {
-        errorMessage = """
-            Sorry!!
-            Not implement yet...
+    func saveToAlbum(baseImage: UIImage) {
+        saveConfirmMessageModel.selected = {
+            self.saveConfirmMessageModel.show = false
+            self.saveToAlbum(of: $0, baseImage: baseImage)
+        }
+        saveConfirmMessageModel.message = """
+            Please select the option for saving your drawn contents to Photo App.
             """
+        saveConfirmMessageModel.show = true
     }
 
-    func restart() {
+    func restore() {
         showProgress = true
         Task { @MainActor in
             do {
@@ -108,6 +127,11 @@ final class DrawingViewModel: NSObject, ObservableObject {
             try await Task.sleep(for: .seconds(0.5))
             showProgress = false
         }
+    }
+
+    func trash() {
+        canvasView.drawing = PKDrawing()
+        hasModifiedDrawing = false
     }
 
     func help() {
@@ -158,6 +182,52 @@ private extension DrawingViewModel {
                     os_log("Could not save data model: %s", type: .error, error.localizedDescription)
                     continuation.resume(throwing: error)
                 }
+            }
+        }
+    }
+
+    func saveToAlbum(of type: SaveConfirmMessageResponseType, baseImage: UIImage) {
+        if type == .cancel {
+            return
+        }
+        showProgress = true
+        let imageSaver = ImageSaver(
+            baseImage: baseImage,
+            drawnImage: canvasView.drawing.image(from: canvasView.frame, scale: 1.0)
+        )
+        Task {
+            let error: Error?
+            if type == .drawnImage {
+                error = await imageSaver.writeDrawnImageToPhotoAlbum()
+            } else {
+                error = await imageSaver.writeCombinedImageToPhotoAlbum()
+            }
+            try await Task.sleep(for: .seconds(0.5))
+            Task { @MainActor in
+                if let error {
+                    errorMessageModel.title = "Error"
+                    errorMessageModel.message = """
+                        Save error(\(error.localizedDescription)).
+
+                        Please try again.
+                        """
+                    errorMessageModel.show = true
+                    return
+                }
+                toastMessageModel.message = "Saving is complete."
+                toastMessageModel.show = true
+                toastMessageModel.tapped = {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        self.toastMessageModel.show = false
+                    }
+                }
+                Task {
+                    try await Task.sleep(for: .seconds(5))
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        self.toastMessageModel.show = false
+                    }
+                }
+                showProgress = false
             }
         }
     }
