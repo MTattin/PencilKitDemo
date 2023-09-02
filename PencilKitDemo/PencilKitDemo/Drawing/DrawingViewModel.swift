@@ -14,41 +14,10 @@ final class DrawingViewModel: NSObject, ObservableObject {
     // MARK: - Properties
 
     @Published var showProgress: Bool = false
-    @Published var showError: Bool = false {
-        didSet {
-            if !showError {
-                errorMessage = ""
-            }
-        }
-    }
-    @Published var showConfirm: Bool = false {
-        didSet {
-            if !showConfirm {
-                confirmMessage = ""
-            }
-        }
-    }
+    @Published var errorMessageModel = ErrorMessageModel()
+    @Published var confirmMessageModel = ConfirmMessageModel()
 
     let canvasView = PKCanvasView()
-
-    private(set) var errorMessage: String = "" {
-        didSet {
-            if !errorMessage.isEmpty {
-                DispatchQueue.main.async {
-                    self.showError = true
-                }
-            }
-        }
-    }
-    private(set) var confirmMessage: String = "" {
-        didSet {
-            if !confirmMessage.isEmpty {
-                DispatchQueue.main.async {
-                    self.showConfirm = true
-                }
-            }
-        }
-    }
 
     private let toolPicker = PKToolPicker()
     private let serializationQueue = DispatchQueue(label: "SerializationQueue", qos: .userInitiated)
@@ -73,9 +42,14 @@ final class DrawingViewModel: NSObject, ObservableObject {
             dismiss()
             return
         }
-        confirmMessage = """
+        confirmMessageModel.title = "Warning"
+        confirmMessageModel.message = """
             When you return to the top screen, the history of undo and redo will be deleted.
             """
+        confirmMessageModel.rightButtonRole = .destructive
+        confirmMessageModel.rightButtonTitle = "OK"
+        confirmMessageModel.action = { dismiss() }
+        confirmMessageModel.show = true
     }
 
     func toggleTool() {
@@ -103,11 +77,13 @@ final class DrawingViewModel: NSObject, ObservableObject {
                 try await Task.sleep(for: .seconds(0.5))
                 canvasView.drawing = PKDrawing(strokes: try await loadDataModel().strokes)
             } catch {
-                errorMessage = """
+                errorMessageModel.title = "Error"
+                errorMessageModel.message = """
                     Load error(\(error.localizedDescription)).
 
                     Please try again.
                     """
+                errorMessageModel.show = true
             }
             hasModifiedDrawing = false
             showProgress = false
@@ -125,7 +101,9 @@ final class DrawingViewModel: NSObject, ObservableObject {
                 canvasView.drawing = PKDrawing()
                 hasModifiedDrawing = false
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessageModel.title = "Error"
+                errorMessageModel.message = error.localizedDescription
+                errorMessageModel.show = true
             }
             try await Task.sleep(for: .seconds(0.5))
             showProgress = false
@@ -133,10 +111,12 @@ final class DrawingViewModel: NSObject, ObservableObject {
     }
 
     func help() {
-        errorMessage = """
+        errorMessageModel.title = ""
+        errorMessageModel.message = """
             Sorry!!
             Not implement yet...
             """
+        errorMessageModel.show = true
     }
 }
 

@@ -30,27 +30,13 @@ struct DrawingView: View {
             }
             .ignoresSafeArea(.all)
             .progressing(viewModel.showProgress)
-            .alert(
-                "Error",
-                isPresented: $viewModel.showError,
-                actions: {},
-                message: {
-                    Text(viewModel.errorMessage)
-                }
+            .errorMessage(
+                $viewModel.errorMessageModel.show,
+                model: viewModel.errorMessageModel
             )
-            .alert(
-                "Warning",
-                isPresented: $viewModel.showConfirm,
-                actions: {
-                    Button(role: .destructive) {
-                        dismiss()
-                    } label: {
-                        Text("OK")
-                    }
-                },
-                message: {
-                    Text(viewModel.confirmMessage)
-                }
+            .confirmMessage(
+                $viewModel.confirmMessageModel.show,
+                model: viewModel.confirmMessageModel
             )
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
