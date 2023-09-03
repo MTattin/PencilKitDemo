@@ -214,20 +214,25 @@ private extension DrawingViewModel {
                     errorMessageModel.show = true
                     return
                 }
-                toastMessageModel.message = "Saving is complete."
-                toastMessageModel.show = true
-                toastMessageModel.tapped = {
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        self.toastMessageModel.show = false
-                    }
-                }
-                Task {
-                    try await Task.sleep(for: .seconds(5))
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        self.toastMessageModel.show = false
-                    }
-                }
+                showSavedToast()
                 showProgress = false
+            }
+        }
+    }
+
+    @MainActor
+    func showSavedToast() {
+        toastMessageModel.message = "Saving is complete."
+        toastMessageModel.show = true
+        toastMessageModel.tapped = {
+            withAnimation(.easeOut(duration: 0.2)) {
+                self.toastMessageModel.show = false
+            }
+        }
+        Task {
+            try await Task.sleep(for: .seconds(5))
+            withAnimation(.easeOut(duration: 0.2)) {
+                self.toastMessageModel.show = false
             }
         }
     }
