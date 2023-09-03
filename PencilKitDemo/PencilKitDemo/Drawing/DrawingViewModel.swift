@@ -14,41 +14,12 @@ final class DrawingViewModel: NSObject, ObservableObject {
     // MARK: - Properties
 
     @Published var showProgress: Bool = false
-    @Published var showError: Bool = false {
-        didSet {
-            if !showError {
-                errorMessage = ""
-            }
-        }
-    }
-    @Published var showConfirm: Bool = false {
-        didSet {
-            if !showConfirm {
-                confirmMessage = ""
-            }
-        }
-    }
+    @Published var errorMessageModel = ErrorMessageModel()
+    @Published var confirmMessageModel = ConfirmMessageModel()
+    @Published var saveConfirmMessageModel = SaveConfirmMessageModel()
+    @Published var toastMessageModel = ToastMessageModel()
 
     let canvasView = PKCanvasView()
-
-    private(set) var errorMessage: String = "" {
-        didSet {
-            if !errorMessage.isEmpty {
-                DispatchQueue.main.async {
-                    self.showError = true
-                }
-            }
-        }
-    }
-    private(set) var confirmMessage: String = "" {
-        didSet {
-            if !confirmMessage.isEmpty {
-                DispatchQueue.main.async {
-                    self.showConfirm = true
-                }
-            }
-        }
-    }
 
     private let toolPicker = PKToolPicker()
     private let serializationQueue = DispatchQueue(label: "SerializationQueue", qos: .userInitiated)
@@ -66,6 +37,19 @@ final class DrawingViewModel: NSObject, ObservableObject {
         canvasView.backgroundColor = .clear
         canvasView.drawingPolicy = .anyInput
         canvasView.delegate = self
+        Task {
+            let drawing = try? await loadDataModel()
+            if drawing?.strokes.count ?? 0 > 0 {
+                Task { @MainActor in
+                    confirmMessageModel.title = ""
+                    confirmMessageModel.message = "Do you want to restore the previously drawn image?"
+                    confirmMessageModel.rightButtonRole = nil
+                    confirmMessageModel.rightButtonTitle = "Restore"
+                    confirmMessageModel.action = { self.restore() }
+                    confirmMessageModel.show = true
+                }
+            }
+        }
     }
 
     func dismiss(_ dismiss: DismissAction) {
@@ -73,9 +57,14 @@ final class DrawingViewModel: NSObject, ObservableObject {
             dismiss()
             return
         }
-        confirmMessage = """
+        confirmMessageModel.title = "Warning"
+        confirmMessageModel.message = """
             When you return to the top screen, the history of undo and redo will be deleted.
             """
+        confirmMessageModel.rightButtonRole = .destructive
+        confirmMessageModel.rightButtonTitle = "OK"
+        confirmMessageModel.action = { dismiss() }
+        confirmMessageModel.show = true
     }
 
     func toggleTool() {
@@ -89,25 +78,31 @@ final class DrawingViewModel: NSObject, ObservableObject {
         }
     }
 
-    func saveToAlbum() {
-        errorMessage = """
-            Sorry!!
-            Not implement yet...
+    func saveToAlbum(baseImage: UIImage) {
+        saveConfirmMessageModel.selected = {
+            self.saveConfirmMessageModel.show = false
+            self.saveToAlbum(of: $0, baseImage: baseImage)
+        }
+        saveConfirmMessageModel.message = """
+            Please select the option for saving your drawn contents to Photo App.
             """
+        saveConfirmMessageModel.show = true
     }
 
-    func restart() {
+    func restore() {
         showProgress = true
         Task { @MainActor in
             do {
                 try await Task.sleep(for: .seconds(0.5))
                 canvasView.drawing = PKDrawing(strokes: try await loadDataModel().strokes)
             } catch {
-                errorMessage = """
+                errorMessageModel.title = "Error"
+                errorMessageModel.message = """
                     Load error(\(error.localizedDescription)).
 
                     Please try again.
                     """
+                errorMessageModel.show = true
             }
             hasModifiedDrawing = false
             showProgress = false
@@ -125,18 +120,27 @@ final class DrawingViewModel: NSObject, ObservableObject {
                 canvasView.drawing = PKDrawing()
                 hasModifiedDrawing = false
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessageModel.title = "Error"
+                errorMessageModel.message = error.localizedDescription
+                errorMessageModel.show = true
             }
             try await Task.sleep(for: .seconds(0.5))
             showProgress = false
         }
     }
 
+    func trash() {
+        canvasView.drawing = PKDrawing()
+        hasModifiedDrawing = false
+    }
+
     func help() {
-        errorMessage = """
+        errorMessageModel.title = ""
+        errorMessageModel.message = """
             Sorry!!
             Not implement yet...
             """
+        errorMessageModel.show = true
     }
 }
 
@@ -178,6 +182,57 @@ private extension DrawingViewModel {
                     os_log("Could not save data model: %s", type: .error, error.localizedDescription)
                     continuation.resume(throwing: error)
                 }
+            }
+        }
+    }
+
+    func saveToAlbum(of type: SaveConfirmMessageResponseType, baseImage: UIImage) {
+        if type == .cancel {
+            return
+        }
+        showProgress = true
+        let imageSaver = ImageSaver(
+            baseImage: baseImage,
+            drawnImage: canvasView.drawing.image(from: canvasView.frame, scale: 1.0)
+        )
+        Task {
+            let error: Error?
+            if type == .drawnImage {
+                error = await imageSaver.writeDrawnImageToPhotoAlbum()
+            } else {
+                error = await imageSaver.writeCombinedImageToPhotoAlbum()
+            }
+            try await Task.sleep(for: .seconds(0.5))
+            Task { @MainActor in
+                if let error {
+                    errorMessageModel.title = "Error"
+                    errorMessageModel.message = """
+                        Save error(\(error.localizedDescription)).
+
+                        Please try again.
+                        """
+                    errorMessageModel.show = true
+                    return
+                }
+                showSavedToast()
+                showProgress = false
+            }
+        }
+    }
+
+    @MainActor
+    func showSavedToast() {
+        toastMessageModel.message = "Saving is complete."
+        toastMessageModel.show = true
+        toastMessageModel.tapped = {
+            withAnimation(.easeOut(duration: 0.2)) {
+                self.toastMessageModel.show = false
+            }
+        }
+        Task {
+            try await Task.sleep(for: .seconds(5))
+            withAnimation(.easeOut(duration: 0.2)) {
+                self.toastMessageModel.show = false
             }
         }
     }

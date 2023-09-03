@@ -29,29 +29,18 @@ struct DrawingView: View {
                     }
             }
             .ignoresSafeArea(.all)
-            .progressing(viewModel.showProgress)
-            .alert(
-                "Error",
-                isPresented: $viewModel.showError,
-                actions: {},
-                message: {
-                    Text(viewModel.errorMessage)
-                }
+            .errorMessage(
+                $viewModel.errorMessageModel.show,
+                model: viewModel.errorMessageModel
             )
-            .alert(
-                "Warning",
-                isPresented: $viewModel.showConfirm,
-                actions: {
-                    Button(role: .destructive) {
-                        dismiss()
-                    } label: {
-                        Text("OK")
-                    }
-                },
-                message: {
-                    Text(viewModel.confirmMessage)
-                }
+            .confirmMessage(
+                $viewModel.confirmMessageModel.show,
+                model: viewModel.confirmMessageModel
             )
+            .sheet(isPresented: $viewModel.saveConfirmMessageModel.show) {
+                SaveConfirmationView(model: viewModel.saveConfirmMessageModel)
+                    .presentationDetents([ .fraction(0.4), .fraction(0.75) ])
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
                     HStack {
@@ -62,7 +51,7 @@ struct DrawingView: View {
                     HStack(spacing: 2.5) {
                         toolButton
                         saveButton
-                        restartButton
+                        restoreButton
                         pauseButton
                         undoButton
                         redoButton
@@ -72,6 +61,8 @@ struct DrawingView: View {
                 }
             }
         }
+        .progressing(viewModel.showProgress)
+        .toast(viewModel.toastMessageModel)
     }
 }
 
@@ -96,15 +87,15 @@ private extension DrawingView {
     /// Save to Album
     var saveButton: some View {
         Button {
-            viewModel.saveToAlbum()
+            viewModel.saveToAlbum(baseImage: baseImage)
         } label: {
             Image(systemName: "camera.circle")
         }
     }
-    /// 再開用
-    var restartButton: some View {
+    /// 復元用
+    var restoreButton: some View {
         Button {
-            viewModel.restart()
+            viewModel.restore()
         } label: {
             Image(systemName: "play.circle")
         }
@@ -136,7 +127,7 @@ private extension DrawingView {
     /// Trash
     var trashButton: some View {
         Button {
-            viewModel.canvasView.drawing = PKDrawing()
+            viewModel.trash()
         } label: {
             Image(systemName: "trash.circle")
         }
