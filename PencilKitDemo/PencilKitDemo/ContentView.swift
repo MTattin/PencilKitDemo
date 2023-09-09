@@ -12,11 +12,12 @@ struct ContentView: View {
     @State private var startShowDrawing: Bool = false
     @State private var showDrawing: Bool = false
     @State private var screenShotBounds: CGRect = .zero
+    @State private var backgroundColor: Color = .white
 
     private var drawBaseView: some View {
         ZStack {
             GeometryReader { geometry in
-                Color.clear
+                backgroundColor
                     .ignoresSafeArea(.all)
                     .preference(
                         key: BoundsPreferenceKey.self,
@@ -53,6 +54,13 @@ struct ContentView: View {
             }
             .ignoresSafeArea(.all)
             .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    HStack {
+                        ColorPicker(selection: $backgroundColor) {
+                            Label("", systemImage: "")
+                        }
+                    }
+                }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     HStack {
                         Button {
